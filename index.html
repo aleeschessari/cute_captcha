@@ -13,7 +13,6 @@
   --text: #241a25;
   --muted: #766875;
   --accent: #e84a8a;
-  --accent-dark: #c93271;
   --soft: #f4edf2;
 }
 * { box-sizing: border-box; }
@@ -28,7 +27,7 @@ body {
   color: var(--text);
 }
 .card {
-  width: min(100%, 430px);
+  width: min(100%, 440px);
   padding: 30px 24px;
   border-radius: 24px;
   background: var(--card);
@@ -66,7 +65,16 @@ p {
   font-size: 14px;
   font-weight: 700;
 }
-.math-row {
+.challenge-image {
+  width: 100%;
+  max-height: 330px;
+  object-fit: contain;
+  margin-top: 18px;
+  border-radius: 18px;
+  background: var(--soft);
+  border: 2px solid #eadde5;
+}
+.answer-row {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
@@ -83,9 +91,7 @@ input[type="number"] {
   background: white;
   outline: none;
 }
-input[type="number"]:focus {
-  border-color: var(--accent);
-}
+input[type="number"]:focus { border-color: var(--accent); }
 .buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -156,7 +162,7 @@ input[type="number"]:focus {
       <div class="question" id="math-question"></div>
 
       <form id="math-form">
-        <div class="math-row">
+        <div class="answer-row">
           <input
             id="math-answer"
             type="number"
@@ -180,13 +186,40 @@ input[type="number"]:focus {
       </div>
     </section>
 
+    <section id="equipment-step" class="hidden">
+      <div class="question">How many unnecessary equipments are present in this picture?</div>
+      <img
+        class="challenge-image"
+        src="Unitled.jpeg"
+        alt="Equipment challenge"
+        onerror="this.alt='Upload Unitled.jpeg to the repository root';"
+      >
+
+      <form id="equipment-form">
+        <div class="answer-row">
+          <input
+            id="equipment-answer"
+            type="number"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Your answer"
+            required
+          >
+          <button class="button primary" type="submit">Check</button>
+        </div>
+      </form>
+
+      <div class="feedback" id="equipment-feedback"></div>
+    </section>
+
     <section id="cute-step" class="hidden">
       <div class="question">Are you cute?</div>
 
       <form id="captcha-form">
-        <input id="math-score" type="hidden" name="math_score" value="3/3">
-        <input id="human-answer" type="hidden" name="human_answer" value="">
-        <input id="cute-answer" type="hidden" name="cute_answer" value="">
+        <input type="hidden" name="math_score" value="3/3">
+        <input id="human-answer-hidden" type="hidden" name="human_answer" value="">
+        <input id="equipment-answer-hidden" type="hidden" name="equipment_answer" value="3">
+        <input id="cute-answer-hidden" type="hidden" name="cute_answer" value="">
         <input type="hidden" name="subject" value="Cute captcha answer">
 
         <div class="buttons">
@@ -225,8 +258,7 @@ input[type="number"]:focus {
     document.getElementById("math-form").addEventListener("submit", (event) => {
       event.preventDefault();
 
-      const value = Number(mathAnswer.value);
-      if (value !== questions[mathIndex].answer) {
+      if (Number(mathAnswer.value) !== questions[mathIndex].answer) {
         mathFeedback.textContent = "Incorrect. Try again.";
         return;
       }
@@ -245,16 +277,33 @@ input[type="number"]:focus {
     document.querySelectorAll("[data-human]").forEach((button) => {
       button.addEventListener("click", () => {
         selectedHumanAnswer = button.dataset.human;
-        document.getElementById("human-answer").value = selectedHumanAnswer;
+        document.getElementById("human-answer-hidden").value = selectedHumanAnswer;
         document.getElementById("human-step").classList.add("hidden");
-        document.getElementById("cute-step").classList.remove("hidden");
+        document.getElementById("equipment-step").classList.remove("hidden");
       });
+    });
+
+    document.getElementById("equipment-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const value = Number(document.getElementById("equipment-answer").value);
+      const feedback = document.getElementById("equipment-feedback");
+
+      if (value !== 3) {
+        feedback.textContent = "Incorrect. Try again.";
+        return;
+      }
+
+      feedback.textContent = "";
+      document.getElementById("equipment-answer-hidden").value = String(value);
+      document.getElementById("equipment-step").classList.add("hidden");
+      document.getElementById("cute-step").classList.remove("hidden");
     });
 
     document.querySelectorAll("[data-cute]").forEach((button) => {
       button.addEventListener("click", () => {
         selectedCuteAnswer = button.dataset.cute;
-        document.getElementById("cute-answer").value = selectedCuteAnswer;
+        document.getElementById("cute-answer-hidden").value = selectedCuteAnswer;
       });
     });
 

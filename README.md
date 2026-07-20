@@ -1,25 +1,27 @@
-# Cute Captcha — Math Version
+# Cute Captcha — Equipment Version
+
+## Upload these files to the repository root
+- `index.html`
+- `result.html`
+- `Unitled.jpeg`
 
 ## Flow
-1. Three math questions:
-   - Addition
-   - Subtraction
-   - Multiplication
+1. Three math questions
 2. `Are you a human?`
-   - Either answer continues.
-3. `Are you cute?`
-   - Yes: `Your ego must be very big. Message delivered successfully.`
-   - No: `Delivery failed.`
+3. Image question:
+   `How many unnecessary equipments are present in this picture?`
+   Correct answer: `3`
+4. `Are you cute?`
 
-## Formspree setup
-1. Create or open your Formspree form.
-2. Copy the ID from:
-   `https://formspree.io/f/FORM_ID`
-3. Open `index.html`.
-4. Replace `YOUR_FORM_ID` with your actual Formspree form ID.
-5. Upload `index.html` and `result.html` to the root of your GitHub repository.
+## Result
+- Yes: `Your ego must be very big. Message delivered successfully.`
+- No: `Delivery failed.`
 
-The email submission contains:
+## Formspree
+The form ID `mdaqzlqg` is already included.
+
+Email submissions contain:
 - `math_score`
 - `human_answer`
+- `equipment_answer`
 - `cute_answer`

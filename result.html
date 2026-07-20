@@ -13,7 +13,6 @@
   --text: #241a25;
   --muted: #766875;
   --accent: #e84a8a;
-  --accent-dark: #c93271;
   --soft: #f4edf2;
 }
 * { box-sizing: border-box; }
@@ -28,7 +27,7 @@ body {
   color: var(--text);
 }
 .card {
-  width: min(100%, 430px);
+  width: min(100%, 440px);
   padding: 30px 24px;
   border-radius: 24px;
   background: var(--card);
@@ -66,7 +65,16 @@ p {
   font-size: 14px;
   font-weight: 700;
 }
-.math-row {
+.challenge-image {
+  width: 100%;
+  max-height: 330px;
+  object-fit: contain;
+  margin-top: 18px;
+  border-radius: 18px;
+  background: var(--soft);
+  border: 2px solid #eadde5;
+}
+.answer-row {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 10px;
@@ -83,9 +91,7 @@ input[type="number"] {
   background: white;
   outline: none;
 }
-input[type="number"]:focus {
-  border-color: var(--accent);
-}
+input[type="number"]:focus { border-color: var(--accent); }
 .buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
