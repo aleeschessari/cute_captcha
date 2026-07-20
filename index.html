@@ -9,7 +9,7 @@
   color-scheme: light;
   --bg1: #fff1f6;
   --bg2: #f4e9ff;
-  --card: rgba(255,255,255,.94);
+  --card: rgba(255,255,255,.95);
   --text: #241a25;
   --muted: #766875;
   --accent: #e84a8a;
@@ -28,7 +28,7 @@ body {
   color: var(--text);
 }
 .card {
-  width: min(100%, 420px);
+  width: min(100%, 430px);
   padding: 30px 24px;
   border-radius: 24px;
   background: var(--card);
@@ -57,8 +57,34 @@ p {
 }
 .question {
   margin-top: 28px;
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
+}
+.progress {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+.math-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-top: 18px;
+}
+input[type="number"] {
+  width: 100%;
+  min-height: 54px;
+  border: 2px solid #eadde5;
+  border-radius: 16px;
+  padding: 0 16px;
+  font-size: 19px;
+  color: var(--text);
+  background: white;
+  outline: none;
+}
+input[type="number"]:focus {
+  border-color: var(--accent);
 }
 .buttons {
   display: grid;
@@ -89,13 +115,13 @@ p {
   background: var(--soft);
   color: var(--text);
 }
-.hidden { display: none; }
-.error {
-  min-height: 22px;
-  margin-top: 14px;
-  color: #a12651;
+.hidden { display: none !important; }
+.feedback {
+  min-height: 24px;
+  margin-top: 12px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
+  color: #a12651;
 }
 .loading { opacity: .65; pointer-events: none; }
 .result {
@@ -123,9 +149,30 @@ p {
   <main class="card">
     <div class="status">🔒 CAPTCHA VERIFICATION</div>
     <h1>Complete this captcha to deliver the message</h1>
-    <p>We need to confirm a couple of important details before continuing.</p>
+    <p>Please complete the verification steps below.</p>
 
-    <section id="human-step">
+    <section id="math-step">
+      <div class="progress" id="math-progress">Math question 1 of 3</div>
+      <div class="question" id="math-question"></div>
+
+      <form id="math-form">
+        <div class="math-row">
+          <input
+            id="math-answer"
+            type="number"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Your answer"
+            required
+          >
+          <button class="button primary" type="submit">Check</button>
+        </div>
+      </form>
+
+      <div class="feedback" id="math-feedback"></div>
+    </section>
+
+    <section id="human-step" class="hidden">
       <div class="question">Are you a human?</div>
       <div class="buttons">
         <button class="button primary" type="button" data-human="yes">Yes</button>
@@ -137,6 +184,7 @@ p {
       <div class="question">Are you cute?</div>
 
       <form id="captcha-form">
+        <input id="math-score" type="hidden" name="math_score" value="3/3">
         <input id="human-answer" type="hidden" name="human_answer" value="">
         <input id="cute-answer" type="hidden" name="cute_answer" value="">
         <input type="hidden" name="subject" value="Cute captcha answer">
@@ -148,12 +196,51 @@ p {
       </form>
     </section>
 
-    <div class="error" data-fs-error></div>
+    <div class="feedback" data-fs-error></div>
   </main>
 
   <script>
+    const questions = [
+      { text: "7 + 5 = ?", answer: 12 },
+      { text: "14 − 6 = ?", answer: 8 },
+      { text: "4 × 3 = ?", answer: 12 }
+    ];
+
+    let mathIndex = 0;
     let selectedHumanAnswer = "";
     let selectedCuteAnswer = "";
+
+    const mathQuestion = document.getElementById("math-question");
+    const mathProgress = document.getElementById("math-progress");
+    const mathAnswer = document.getElementById("math-answer");
+    const mathFeedback = document.getElementById("math-feedback");
+
+    function showMathQuestion() {
+      mathQuestion.textContent = questions[mathIndex].text;
+      mathProgress.textContent = `Math question ${mathIndex + 1} of ${questions.length}`;
+      mathAnswer.value = "";
+      mathAnswer.focus();
+    }
+
+    document.getElementById("math-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const value = Number(mathAnswer.value);
+      if (value !== questions[mathIndex].answer) {
+        mathFeedback.textContent = "Incorrect. Try again.";
+        return;
+      }
+
+      mathFeedback.textContent = "";
+      mathIndex += 1;
+
+      if (mathIndex < questions.length) {
+        showMathQuestion();
+      } else {
+        document.getElementById("math-step").classList.add("hidden");
+        document.getElementById("human-step").classList.remove("hidden");
+      }
+    });
 
     document.querySelectorAll("[data-human]").forEach((button) => {
       button.addEventListener("click", () => {
@@ -190,6 +277,8 @@ p {
         window.location.href = resultUrl.toString();
       }
     });
+
+    showMathQuestion();
   </script>
 
   <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
